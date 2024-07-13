@@ -514,7 +514,11 @@ class ProviderService
             $user = $this->userManager->createUser($uid, $userPassword);
 
             if ($this->config->getAppValue($this->appName, 'create_disabled_users')) {
-                $user->setEnabled(false); // rr4: TODO: do this if not NYU
+                $user->setEnabled(false);
+            }
+
+            if ($profile->data['idp'] != 'urn:mace:incommon:nyu.edu') {
+                $user->setEnabled(false);
             }
 
             $this->config->setUserValue($uid, $this->appName, 'disable_password_confirmation', 1);

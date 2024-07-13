@@ -33,8 +33,6 @@ class CustomOpenIDConnect extends CustomOAuth2
 
         $displayNameClaim = $this->config->get('displayname_claim');
 
-        // rr4: TODO: Get CILogon claims we want here
-
         $userProfile = new User\Profile();
         $userProfile->identifier  = $data->get('sub');
         $userProfile->displayName = $data->get($displayNameClaim) ?: $data->get('name') ?: $data->get('preferred_username');
@@ -51,6 +49,9 @@ class CustomOpenIDConnect extends CustomOAuth2
         }
         if ($groupMapping = $this->config->get('group_mapping')) {
             $userProfile->data['group_mapping'] = $groupMapping;
+        }
+        if ($data->exists('https://cilogon.org/idp')) {
+            $userProfile->data['idp'] = $data->get('https://cilogon.org/idp');
         }
 
         $userInfoUrl = trim($this->config->get('endpoints')['user_info_url']);
