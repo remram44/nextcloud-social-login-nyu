@@ -349,12 +349,12 @@ class ProviderService
         try {
             $adapter = new $class($config, null, $this->storage);
             $adapter->authenticate();
-            $profile = $adapter->getUserProfile();
+            $profile = $adapter->getUserProfile(); // rr4: this is where we call CustomOpenIDConnect.php
         }  catch (\Exception $e) {
             $this->storage->clear();
             throw new LoginException($e->getMessage());
         }
-        $profileId = preg_replace('#.*/#', '', rtrim($profile->identifier, '/'));
+        $profileId = preg_replace('#.*/#', '', rtrim($profile->identifier, '/')); // rr4: this gets the last part of the CILogon sub, e.g. "http://cilogon.org/serverA/users/9021171" -> "9021171". It then gets prepended with provider name, e.g. "cilogon-9021171"
         if (empty($profileId)) {
             $this->storage->clear();
             throw new LoginException($this->l->t('Can not get identifier from provider'));
@@ -459,7 +459,7 @@ class ProviderService
         if ($provider === 'telegram') {
             $provider = 'tg'; //For backward compatibility
         }
-        $uid = $provider.'-'.$profileId;
+        $uid = $provider.'-'.$profileId; // rr4: sets account UID here
         if (strlen($uid) > 64 || !preg_match('#^[a-z0-9_.@-]+$#i', $profileId)) {
             $uid = $provider.'-'.md5($profileId);
         }
@@ -514,7 +514,7 @@ class ProviderService
             $user = $this->userManager->createUser($uid, $userPassword);
 
             if ($this->config->getAppValue($this->appName, 'create_disabled_users')) {
-                $user->setEnabled(false);
+                $user->setEnabled(false); // rr4: TODO: do this if not NYU
             }
 
             $this->config->setUserValue($uid, $this->appName, 'disable_password_confirmation', 1);

@@ -33,6 +33,8 @@ class CustomOpenIDConnect extends CustomOAuth2
 
         $displayNameClaim = $this->config->get('displayname_claim');
 
+        // rr4: TODO: Get CILogon claims we want here
+
         $userProfile = new User\Profile();
         $userProfile->identifier  = $data->get('sub');
         $userProfile->displayName = $data->get($displayNameClaim) ?: $data->get('name') ?: $data->get('preferred_username');
